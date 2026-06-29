@@ -1,5 +1,6 @@
 mod args;
 mod audio_buffer;
+mod band_energy;
 mod rms;
 mod wav;
 
@@ -10,7 +11,7 @@ use wav::load_wav;
 
 use audio_buffer::AudioBuffer;
 
-use crate::rms::compare_rms;
+use crate::{band_energy::get_band_energy, rms::compare_rms};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = parse_args()?;
@@ -23,6 +24,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     print_wav_info("second", &candidate_wav);
 
     compare_rms(&target_wav, &candidate_wav);
+
+    let target_energy = get_band_energy(&target_wav);
+    let candidate_energy = get_band_energy(&candidate_wav);
+
+    println!("{:?}", target_energy);
+    println!("{:?}", candidate_energy);
 
     Ok(())
 }

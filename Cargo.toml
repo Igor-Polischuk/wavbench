@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 hound = "3.5"
+realfft = "=3.0.1"
