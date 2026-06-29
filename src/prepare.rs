@@ -1,11 +1,15 @@
+use std::{
+    error::Error,
+    io::{self, ErrorKind},
+};
+
 use crate::{
     audio_buffer::AudioBuffer,
-    metrics::{correlation, db, rms},
+    metrics::{db, rms},
 };
 
 pub struct PreparedComparison {
     pub target: Vec<f32>,
-    pub candidate: Vec<f32>,
     pub candidate_matched: Vec<f32>,
     pub gain_db: f32,
     pub candidate_rms: f32,
@@ -13,7 +17,10 @@ pub struct PreparedComparison {
 }
 
 impl PreparedComparison {
-    pub fn prepare(target_wav: &AudioBuffer, candidate_wav: &AudioBuffer) -> Self {
+    pub fn prepare(
+        target_wav: &AudioBuffer,
+        candidate_wav: &AudioBuffer,
+    ) -> Result<Self, Box<dyn Error>> {
         let target = target_wav.to_mono_left();
         let candidate = candidate_wav.to_mono_left();
 
@@ -25,25 +32,38 @@ impl PreparedComparison {
         let candidate = candidate.to_vec();
 
         let len = target.len().min(candidate.len());
+        if len == 0 {
+            return Err(io::Error::new(
+                ErrorKind::InvalidData,
+                "WAV files do not contain comparable samples",
+            )
+            .into());
+        }
 
         let target = target[..len].to_vec();
         let candidate = candidate[..len].to_vec();
 
         let target_rms = rms(&target);
         let candidate_rms = rms(&candidate);
+        if !candidate_rms.is_finite() || candidate_rms <= 0.0 {
+            return Err(io::Error::new(
+                ErrorKind::InvalidData,
+                "Candidate WAV RMS is zero; cannot apply gain matching",
+            )
+            .into());
+        }
 
         let gain = target_rms / candidate_rms;
         let gain_db = db(gain);
 
         let candidate_matched = candidate.iter().map(|x| x * gain).collect();
 
-        PreparedComparison {
+        Ok(PreparedComparison {
             target,
-            candidate,
             candidate_matched,
             gain_db,
             candidate_rms,
             target_rms,
-        }
+        })
     }
 }

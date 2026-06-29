@@ -1,13 +1,3 @@
-// pub struct WavAnalizer {
-
-// }
-
-use crate::audio_buffer::AudioBuffer;
-
-pub fn peak(samples: &[f32]) -> f32 {
-    samples.iter().fold(0.0, |m, x| m.max(x.abs()))
-}
-
 pub fn rms(samples: &[f32]) -> f32 {
     let sum = samples.iter().map(|x| x * x).sum::<f32>();
     (sum / samples.len() as f32).sqrt()
@@ -42,7 +32,7 @@ pub fn correlation(a: &[f32], b: &[f32]) -> f32 {
     (dot / denom) as f32
 }
 
-pub fn null_test(target: &Vec<f32>, candidate_matched: &Vec<f32>) -> f32 {
+pub fn null_test(target: &[f32], candidate_matched: &[f32]) -> f32 {
     let diff: Vec<f32> = candidate_matched
         .iter()
         .zip(target.iter())

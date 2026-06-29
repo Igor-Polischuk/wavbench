@@ -1,3 +1,8 @@
+use std::{
+    error::Error,
+    io::{self, ErrorKind},
+};
+
 use realfft::RealFftPlanner;
 
 use crate::metrics::{db, rms};
@@ -21,15 +26,19 @@ impl BandEnergy {
         Self { bands: [0.0; 27] }
     }
 
-    pub fn power_db(&self, x: f32) -> f32 {
-        10.0 * x.max(1e-20).log10()
-    }
+    pub fn from_samples(samples: &[f32], sample_rate: u32) -> Result<Self, Box<dyn Error>> {
+        if samples.len() < FFT_SIZE {
+            return Err(io::Error::new(
+                ErrorKind::InvalidData,
+                format!(
+                    "Not enough samples for band energy analysis: got {}, need at least {}",
+                    samples.len(),
+                    FFT_SIZE
+                ),
+            )
+            .into());
+        }
 
-    pub fn relative_db(&self, band_power: f32) -> f32 {
-        self.power_db(band_power / self.total().max(1e-20))
-    }
-
-    pub fn from_samples(samples: &[f32], sample_rate: u32) -> Self {
         let mut planner = RealFftPlanner::<f32>::new();
         let r2c = planner.plan_fft_forward(FFT_SIZE);
 
@@ -57,7 +66,7 @@ impl BandEnergy {
             }
 
             let mut spectrum = r2c.make_output_vec();
-            r2c.process(&mut time_buffer, &mut spectrum).unwrap();
+            r2c.process(&mut time_buffer, &mut spectrum)?;
 
             for (i, bin) in spectrum.iter().enumerate() {
                 let freq = i as f32 * sample_rate as f32 / FFT_SIZE as f32;
@@ -70,24 +79,29 @@ impl BandEnergy {
             start += HOP_SIZE;
         }
 
+        if block_count == 0.0 {
+            return Err(io::Error::new(
+                ErrorKind::InvalidData,
+                "No FFT blocks were available for band energy analysis",
+            )
+            .into());
+        }
+
         band_energy.scale(1.0 / block_count);
 
-        band_energy
+        Ok(band_energy)
     }
 
     fn add_power(&mut self, freq: f32, power: f32) {
-        // Межі для 1/3 октави обчислюються як f_center * /0.891 та f_center * 1.122
-        // Але для простоти пошуку знайдемо найближчу центральну частоту у логарифмічному просторі
         if freq < 17.8 || freq > 8912.0 {
-            return; // Ігноруємо те, що поза межами нашого аналізу
+            return;
         }
 
         let mut closest_idx = 0;
         let mut min_diff = f32::MAX;
 
-        // Шукаємо найближчу центральну частоту
         for (idx, &center_freq) in BANDS_1_3_OCTAVE.iter().enumerate() {
-            let diff = (freq / center_freq).ln().abs(); // Логарифмічна відстань
+            let diff = (freq / center_freq).ln().abs();
             if diff < min_diff {
                 min_diff = diff;
                 closest_idx = idx;
@@ -97,13 +111,9 @@ impl BandEnergy {
         self.bands[closest_idx] += power;
     }
 
-    pub fn scale(&mut self, gain: f32) {
+    fn scale(&mut self, gain: f32) {
         for val in self.bands.iter_mut() {
             *val *= gain;
         }
-    }
-
-    pub fn total(&self) -> f32 {
-        self.bands.iter().sum()
     }
 }

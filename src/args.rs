@@ -1,47 +1,25 @@
-use std::{
-    env,
-    ffi::OsString,
-    io::{self, ErrorKind},
-    path::PathBuf,
-};
+use std::path::PathBuf;
 
-#[derive(Debug)]
-pub struct AnalyzerArgs {
+use clap::{Args, Parser, Subcommand};
+
+#[derive(Debug, Parser)]
+#[command(version, about = "WAV comparison and analysis tools")]
+pub struct Cli {
+    #[command(subcommand)]
+    pub command: Command,
+}
+
+#[derive(Debug, Subcommand)]
+pub enum Command {
+    /// Compare band energy between two WAV files.
+    Bec(BecArgs),
+}
+
+#[derive(Args, Debug)]
+pub struct BecArgs {
+    /// Reference WAV file.
     pub target_wav_path: PathBuf,
+
+    /// Candidate WAV file to compare against the reference.
     pub candidate_wav_path: PathBuf,
-}
-
-pub fn parse_args() -> io::Result<AnalyzerArgs> {
-    let mut args = env::args_os();
-    let program_name = args
-        .next()
-        .unwrap_or_else(|| OsString::from("wav-analyzer"));
-
-    parse_paths(args, &program_name)
-}
-
-fn parse_paths<I>(args: I, program_name: &OsString) -> io::Result<AnalyzerArgs>
-where
-    I: IntoIterator<Item = OsString>,
-{
-    let mut paths = args.into_iter().map(PathBuf::from).collect::<Vec<_>>();
-
-    if paths.len() != 2 {
-        return Err(io::Error::new(
-            ErrorKind::InvalidInput,
-            format!(
-                "Expected exactly 2 WAV paths, got {}.\nUsage: {} <first.wav> <second.wav>",
-                paths.len(),
-                program_name.to_string_lossy()
-            ),
-        ));
-    }
-
-    let second_wav_path = paths.pop().expect("second path exists after length check");
-    let first_wav_path = paths.pop().expect("first path exists after length check");
-
-    Ok(AnalyzerArgs {
-        target_wav_path: first_wav_path,
-        candidate_wav_path: second_wav_path,
-    })
 }
