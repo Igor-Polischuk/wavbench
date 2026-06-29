@@ -2,6 +2,7 @@ mod args;
 mod audio_buffer;
 mod band_energy;
 mod commands;
+mod generator;
 mod metrics;
 mod prepare;
 mod wav;
@@ -17,5 +18,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     match cli.command {
         Command::Bec(args) => commands::bec::run(args),
+        Command::Gen(args) => commands::generate::run(args),
     }
 }

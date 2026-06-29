@@ -13,6 +13,9 @@ pub struct Cli {
 pub enum Command {
     /// Compare band energy between two WAV files.
     Bec(BecArgs),
+
+    /// Generate WAV test signals.
+    Gen(GenArgs),
 }
 
 #[derive(Args, Debug)]
@@ -22,4 +25,15 @@ pub struct BecArgs {
 
     /// Candidate WAV file to compare against the reference.
     pub candidate_wav_path: PathBuf,
+}
+
+#[derive(Args, Debug)]
+pub struct GenArgs {
+    /// Signal group or exact preset to generate: all, sine, sweep, noise, or a preset name like sine_1000_-36.
+    #[arg(default_value = "all")]
+    pub target: String,
+
+    /// Directory where generated WAV files will be written.
+    #[arg(default_value = ".")]
+    pub output_dir: PathBuf,
 }

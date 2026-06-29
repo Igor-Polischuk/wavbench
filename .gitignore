@@ -2,3 +2,4 @@
 *.txt
 *.sh
 .DS_Store
+out
