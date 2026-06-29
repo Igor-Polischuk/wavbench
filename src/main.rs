@@ -1,3 +1,4 @@
+mod analizer;
 mod args;
 mod audio_buffer;
 mod wav;
@@ -9,15 +10,19 @@ use wav::load_wav;
 
 use audio_buffer::AudioBuffer;
 
+use crate::analizer::compare_rms;
+
 fn main() -> Result<(), Box<dyn Error>> {
     let args = parse_args()?;
 
-    let first_wav = load_wav(&args.first_wav_path)?;
-    let second_wav = load_wav(&args.second_wav_path)?;
+    let target_wav = load_wav(&args.target_wav_path)?;
+    let candidate_wav = load_wav(&args.candidate_wav_path)?;
 
     println!("Loaded WAV files:");
-    print_wav_info("first", &first_wav);
-    print_wav_info("second", &second_wav);
+    print_wav_info("first", &target_wav);
+    print_wav_info("second", &candidate_wav);
+
+    compare_rms(&target_wav, &candidate_wav);
 
     Ok(())
 }

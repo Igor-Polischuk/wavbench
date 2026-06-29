@@ -7,8 +7,8 @@ use std::{
 
 #[derive(Debug)]
 pub struct AnalyzerArgs {
-    pub first_wav_path: PathBuf,
-    pub second_wav_path: PathBuf,
+    pub target_wav_path: PathBuf,
+    pub candidate_wav_path: PathBuf,
 }
 
 pub fn parse_args() -> io::Result<AnalyzerArgs> {
@@ -41,7 +41,7 @@ where
     let first_wav_path = paths.pop().expect("first path exists after length check");
 
     Ok(AnalyzerArgs {
-        first_wav_path,
-        second_wav_path,
+        target_wav_path: first_wav_path,
+        candidate_wav_path: second_wav_path,
     })
 }

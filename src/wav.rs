@@ -18,6 +18,12 @@ pub fn load_wav(path: &Path) -> Result<AudioBuffer, Box<dyn Error>> {
         sample_rate: spec.sample_rate,
         frames: (samples.len() as u32) / (spec.channels as u32),
         bits_per_sample: spec.bits_per_sample,
+        id: path
+            .file_name()
+            .unwrap()
+            .to_os_string()
+            .into_string()
+            .unwrap(),
         samples,
     })
 }
