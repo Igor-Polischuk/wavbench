@@ -1,6 +1,6 @@
-mod analizer;
 mod args;
 mod audio_buffer;
+mod rms;
 mod wav;
 
 use std::error::Error;
@@ -10,7 +10,7 @@ use wav::load_wav;
 
 use audio_buffer::AudioBuffer;
 
-use crate::analizer::compare_rms;
+use crate::rms::compare_rms;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = parse_args()?;
