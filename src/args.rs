@@ -20,6 +20,9 @@ pub enum Command {
     /// Show WAV file metadata and comparison preflight checks.
     Info(InfoArgs),
 
+    /// Analyze processed noise transfer response.
+    Noise(NoiseArgs),
+
     /// Analyze a processed sine test file.
     Sine(SineArgs),
 
@@ -56,6 +59,17 @@ pub struct InfoArgs {
     /// WAV files to inspect. Pass multiple files to compare preflight properties.
     #[arg(required = true)]
     pub wav_paths: Vec<PathBuf>,
+}
+
+#[derive(Args, Debug)]
+pub struct NoiseArgs {
+    /// Input WAV file with the source noise test signal.
+    #[arg(short, long)]
+    pub input: PathBuf,
+
+    /// Output WAV file after processing through the device or amp.
+    #[arg(short, long)]
+    pub output: PathBuf,
 }
 
 #[derive(Args, Debug)]

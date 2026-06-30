@@ -4,6 +4,7 @@ mod band_energy;
 mod commands;
 mod generator;
 mod metrics;
+mod noise_analysis;
 mod prepare;
 mod sine_analysis;
 mod sweep_analysis;
@@ -24,6 +25,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Command::Bec(args) => commands::bec::run(args),
         Command::Gen(args) => commands::generate::run(args),
         Command::Info(args) => commands::info::run(args),
+        Command::Noise(args) => commands::noise::run(args),
         Command::Sine(args) => commands::sine::run(args),
         Command::Sweep(args) => commands::sweep::run(args),
         Command::Twotone(args) => commands::twotone::run(args),
