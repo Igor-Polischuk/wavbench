@@ -17,6 +17,9 @@ pub enum Command {
     /// Generate WAV test signals.
     Gen(GenArgs),
 
+    /// Show WAV file metadata and comparison preflight checks.
+    Info(InfoArgs),
+
     /// Analyze a processed sine test file.
     Sine(SineArgs),
 }
@@ -39,6 +42,13 @@ pub struct GenArgs {
     /// Directory where generated WAV files will be written.
     #[arg(default_value = ".")]
     pub output_dir: PathBuf,
+}
+
+#[derive(Args, Debug)]
+pub struct InfoArgs {
+    /// WAV files to inspect. Pass multiple files to compare preflight properties.
+    #[arg(required = true)]
+    pub wav_paths: Vec<PathBuf>,
 }
 
 #[derive(Args, Debug)]

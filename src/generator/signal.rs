@@ -40,7 +40,7 @@ fn render_raw_samples(preset: &SignalPreset, sample_count: usize) -> Vec<f32> {
 
 fn sine_sample(frequency_hz: f32, sample_index: usize) -> f32 {
     let time_secs = sample_index as f64 / SAMPLE_RATE as f64;
-    (2.0_f64 * std::f64::consts::PI * frequency_hz as f64 * time_secs as f64).sin() as f32
+    (2.0_f64 * std::f64::consts::PI * frequency_hz as f64 * time_secs).sin() as f32
 }
 
 fn log_sweep_sample(start_hz: f32, end_hz: f32, duration_secs: f32, sample_index: usize) -> f32 {
@@ -84,7 +84,7 @@ fn render_pink_noise(sample_count: usize) -> Vec<f32> {
         .map(|sample| {
             b0 = 0.99886 * b0 + sample * 0.0555179;
             b1 = 0.99332 * b1 + sample * 0.0750759;
-            b2 = 0.96900 * b2 + sample * 0.1538520;
+            b2 = 0.96900 * b2 + sample * 0.153_852;
             b3 = 0.86650 * b3 + sample * 0.3104856;
             b4 = 0.55000 * b4 + sample * 0.5329522;
             b5 = -0.7616 * b5 - sample * 0.0168980;

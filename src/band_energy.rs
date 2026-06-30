@@ -93,7 +93,7 @@ impl BandEnergy {
     }
 
     fn add_power(&mut self, freq: f32, power: f32) {
-        if freq < 17.8 || freq > 8912.0 {
+        if !(17.8..=8912.0).contains(&freq) {
             return;
         }
 

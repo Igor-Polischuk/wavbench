@@ -64,8 +64,8 @@ fn print_rms_info(target_id: &str, candidate_id: &str, prepared: &PreparedCompar
 
 fn print_band_energy_diff_table(target_energy: &BandEnergy, candidate_energy: &BandEnergy) {
     println!(
-        "{:<15} | {:<10} | {:<10} | {}",
-        "Freq (Hz)", "Target", "Candidate", "Diff"
+        "{:<15} | {:<10} | {:<10} | Diff",
+        "Freq (Hz)", "Target", "Candidate"
     );
     println!("{}", "-".repeat(55));
 
