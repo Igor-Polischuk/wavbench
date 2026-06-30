@@ -1,4 +1,5 @@
 pub mod bec;
+pub mod energy;
 pub mod generate;
 pub mod info;
 pub mod noise;

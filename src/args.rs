@@ -14,6 +14,9 @@ pub enum Command {
     /// Compare band energy between two WAV files.
     Bec(BecArgs),
 
+    /// Show band energy for one WAV file.
+    Energy(EnergyArgs),
+
     /// Generate WAV test signals.
     Gen(GenArgs),
 
@@ -41,6 +44,12 @@ pub struct BecArgs {
 
     /// Candidate WAV file to compare against the reference.
     pub candidate_wav_path: PathBuf,
+}
+
+#[derive(Args, Debug)]
+pub struct EnergyArgs {
+    /// WAV file to analyze.
+    pub wav_path: PathBuf,
 }
 
 #[derive(Args, Debug)]

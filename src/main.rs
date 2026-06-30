@@ -23,6 +23,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     match cli.command {
         Command::Bec(args) => commands::bec::run(args),
+        Command::Energy(args) => commands::energy::run(args),
         Command::Gen(args) => commands::generate::run(args),
         Command::Info(args) => commands::info::run(args),
         Command::Noise(args) => commands::noise::run(args),
