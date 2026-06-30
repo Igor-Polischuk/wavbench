@@ -6,6 +6,7 @@ mod generator;
 mod metrics;
 mod prepare;
 mod sine_analysis;
+mod sweep_analysis;
 mod wav;
 mod wav_info;
 
@@ -23,5 +24,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         Command::Gen(args) => commands::generate::run(args),
         Command::Info(args) => commands::info::run(args),
         Command::Sine(args) => commands::sine::run(args),
+        Command::Sweep(args) => commands::sweep::run(args),
     }
 }

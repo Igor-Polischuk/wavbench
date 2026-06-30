@@ -22,6 +22,9 @@ pub enum Command {
 
     /// Analyze a processed sine test file.
     Sine(SineArgs),
+
+    /// Analyze a processed log sweep test file.
+    Sweep(SweepArgs),
 }
 
 #[derive(Args, Debug)]
@@ -54,6 +57,17 @@ pub struct InfoArgs {
 #[derive(Args, Debug)]
 pub struct SineArgs {
     /// Input WAV file with the source sine test signal.
+    #[arg(short, long)]
+    pub input: PathBuf,
+
+    /// Output WAV file after processing through the device or amp.
+    #[arg(short, long)]
+    pub output: PathBuf,
+}
+
+#[derive(Args, Debug)]
+pub struct SweepArgs {
+    /// Input WAV file with the source log sweep test signal.
     #[arg(short, long)]
     pub input: PathBuf,
 
