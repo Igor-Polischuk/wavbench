@@ -14,6 +14,10 @@ pub enum Command {
     /// Compare band energy between two WAV files.
     Bec(BecArgs),
 
+    /// Compare a full DSP test suite.
+    #[command(name = "compare-suite")]
+    CompareSuite(CompareSuiteArgs),
+
     /// Show band energy for one WAV file.
     Energy(EnergyArgs),
 
@@ -44,6 +48,25 @@ pub struct BecArgs {
 
     /// Candidate WAV file to compare against the reference.
     pub candidate_wav_path: PathBuf,
+}
+
+#[derive(Args, Debug)]
+pub struct CompareSuiteArgs {
+    /// Directory with original input WAV files.
+    #[arg(long)]
+    pub input_dir: PathBuf,
+
+    /// Directory with target processed WAV files.
+    #[arg(long)]
+    pub target_dir: PathBuf,
+
+    /// Directory with candidate processed WAV files.
+    #[arg(long)]
+    pub candidate_dir: PathBuf,
+
+    /// Directory where report.txt and report.json will be written.
+    #[arg(long)]
+    pub report_dir: PathBuf,
 }
 
 #[derive(Args, Debug)]
