@@ -1,5 +1,3 @@
-use std::f32::consts::PI;
-
 use crate::generator::presets::{FADE_MS, SAMPLE_RATE, SignalPreset, SignalSpec};
 
 pub fn render_preset(preset: &SignalPreset) -> Vec<f32> {
@@ -26,40 +24,36 @@ fn render_raw_samples(preset: &SignalPreset, sample_count: usize) -> Vec<f32> {
         SignalSpec::WhiteNoise => render_white_noise(sample_count),
         SignalSpec::PinkNoise => render_pink_noise(sample_count),
         SignalSpec::Sine { frequency_hz } => (0..sample_count)
-            .map(|index| sine_sample(frequency_hz, index as f32 / SAMPLE_RATE as f32))
+            .map(|index| sine_sample(frequency_hz, index))
             .collect(),
         SignalSpec::LogSweep { start_hz, end_hz } => (0..sample_count)
-            .map(|index| {
-                log_sweep_sample(
-                    start_hz,
-                    end_hz,
-                    preset.duration_secs,
-                    index as f32 / SAMPLE_RATE as f32,
-                )
-            })
+            .map(|index| log_sweep_sample(start_hz, end_hz, preset.duration_secs, index))
             .collect(),
         SignalSpec::TwoTone {
             first_hz,
             second_hz,
         } => (0..sample_count)
-            .map(|index| {
-                let time_secs = index as f32 / SAMPLE_RATE as f32;
-                sine_sample(first_hz, time_secs) + sine_sample(second_hz, time_secs)
-            })
+            .map(|index| sine_sample(first_hz, index) + sine_sample(second_hz, index))
             .collect(),
     }
 }
 
-fn sine_sample(frequency_hz: f32, time_secs: f32) -> f32 {
-    (2.0 * PI * frequency_hz * time_secs).sin()
+fn sine_sample(frequency_hz: f32, sample_index: usize) -> f32 {
+    let time_secs = sample_index as f64 / SAMPLE_RATE as f64;
+    (2.0_f64 * std::f64::consts::PI * frequency_hz as f64 * time_secs as f64).sin() as f32
 }
 
-fn log_sweep_sample(start_hz: f32, end_hz: f32, duration_secs: f32, time_secs: f32) -> f32 {
+fn log_sweep_sample(start_hz: f32, end_hz: f32, duration_secs: f32, sample_index: usize) -> f32 {
+    let start_hz = start_hz as f64;
+    let end_hz = end_hz as f64;
+    let duration_secs = duration_secs as f64;
+    let time_secs = sample_index as f64 / SAMPLE_RATE as f64;
     let ratio = end_hz / start_hz;
     let exponent = ratio.ln() / duration_secs;
-    let phase = 2.0 * PI * start_hz * ((exponent * time_secs).exp() - 1.0) / exponent;
+    let phase =
+        2.0_f64 * std::f64::consts::PI * start_hz * ((exponent * time_secs).exp() - 1.0) / exponent;
 
-    phase.sin()
+    phase.sin() as f32
 }
 
 fn render_white_noise(sample_count: usize) -> Vec<f32> {

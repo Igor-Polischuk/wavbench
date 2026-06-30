@@ -16,6 +16,9 @@ pub enum Command {
 
     /// Generate WAV test signals.
     Gen(GenArgs),
+
+    /// Analyze a processed sine test file.
+    Sine(SineArgs),
 }
 
 #[derive(Args, Debug)]
@@ -36,4 +39,15 @@ pub struct GenArgs {
     /// Directory where generated WAV files will be written.
     #[arg(default_value = ".")]
     pub output_dir: PathBuf,
+}
+
+#[derive(Args, Debug)]
+pub struct SineArgs {
+    /// Input WAV file with the source sine test signal.
+    #[arg(short, long)]
+    pub input: PathBuf,
+
+    /// Output WAV file after processing through the device or amp.
+    #[arg(short, long)]
+    pub output: PathBuf,
 }
