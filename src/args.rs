@@ -25,6 +25,10 @@ pub enum Command {
 
     /// Analyze a processed log sweep test file.
     Sweep(SweepArgs),
+
+    /// Analyze a processed two-tone intermodulation test file.
+    #[command(name = "twotone")]
+    Twotone(TwotoneArgs),
 }
 
 #[derive(Args, Debug)]
@@ -68,6 +72,17 @@ pub struct SineArgs {
 #[derive(Args, Debug)]
 pub struct SweepArgs {
     /// Input WAV file with the source log sweep test signal.
+    #[arg(short, long)]
+    pub input: PathBuf,
+
+    /// Output WAV file after processing through the device or amp.
+    #[arg(short, long)]
+    pub output: PathBuf,
+}
+
+#[derive(Args, Debug)]
+pub struct TwotoneArgs {
+    /// Input WAV file with the source two-tone test signal.
     #[arg(short, long)]
     pub input: PathBuf,
 
